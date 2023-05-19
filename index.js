@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 
@@ -29,12 +29,34 @@ async function run() {
     await client.connect();
 
     const toysCollection = client.db("disneyToys").collection("toys");
+    const disneyCollection = client.db("disneyToys").collection("dolls");
 
     app.get("/toys", async (req, res) => {
       const cursor = toysCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    app.get("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const options = {
+        // Include only the `title` and `imdb` fields in each returned document
+        projection: { title: 1, price: 1, name: 1, rating: 1 },
+      };
+      const result = await toysCollection.findOne(query, options);
+      res.send(result);
+    });
+
+    //disney dolls
+    app.post("/dolls", async (req, res) => {
+      const doll = req.body;
+      console.log(doll);
+      const result = await disneyCollection.insertOne(doll);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
