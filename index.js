@@ -66,7 +66,21 @@ async function run() {
       const result = await disneyCollection.insertOne(doll);
       res.send(result);
     });
-
+    //? update data
+    app.patch("/dolls/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoll = req.body;
+      console.log(updatedDoll);
+      const updateDoc = {
+        $set: {
+          status: updatedDoll.status,
+        },
+      };
+      const result = await disneyCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    //? delete data
     app.delete("/dolls/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
