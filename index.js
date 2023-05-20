@@ -43,17 +43,34 @@ async function run() {
 
       const options = {
         // Include only the `title` and `imdb` fields in each returned document
-        projection: { title: 1, price: 1, name: 1, rating: 1 },
+        projection: { title: 1, price: 1, name: 1, rating: 1, img: 1 },
       };
       const result = await toysCollection.findOne(query, options);
       res.send(result);
     });
 
     //disney dolls
+
+    app.get("/dolls", async (req, res) => {
+      console.log(req.query);
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await disneyCollection.find(query).toArray();
+      res.send(result);
+    });
     app.post("/dolls", async (req, res) => {
       const doll = req.body;
       console.log(doll);
       const result = await disneyCollection.insertOne(doll);
+      res.send(result);
+    });
+
+    app.delete("/dolls/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await disneyCollection.deleteOne(query);
       res.send(result);
     });
 
