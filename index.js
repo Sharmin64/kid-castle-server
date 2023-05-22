@@ -8,8 +8,14 @@ const port = process.env.PORT || 5005;
 
 //? middleware
 
+//const corsConfig = {
+//  origin: "",
+//  credentials: true,
+//  methods: ["GET", "POST", "PUT", "DELETE"],
+//};
+//app.use(cors(corsConfig));
+//app.options("", cors(corsConfig));
 app.use(cors());
-
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_TOY_USER}:${process.env.DB_PASS}@cluster0.xol1uc7.mongodb.net/?retryWrites=true&w=majority`;
@@ -27,17 +33,16 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
-
-    const toysCollection = client.db("disneyToys").collection("toys");
+    //const toysCollection = client.db("disneyToys").collection("toys");
     const disneyCollection = client.db("disneyToys").collection("dolls");
 
-    app.get("/toys", async (req, res) => {
-      const cursor = toysCollection.find();
+    app.get("/dolls", async (req, res) => {
+      const cursor = disneyCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    app.get("/toys/:id", async (req, res) => {
+    app.get("/dolls/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
 
@@ -45,7 +50,7 @@ async function run() {
         // Include only the `title` and `imdb` fields in each returned document
         projection: { title: 1, price: 1, name: 1, rating: 1, img: 1 },
       };
-      const result = await toysCollection.findOne(query, options);
+      const result = await disneyCollection.findOne(query, options);
       res.send(result);
     });
 
@@ -89,7 +94,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
