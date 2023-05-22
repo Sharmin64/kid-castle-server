@@ -33,7 +33,7 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
-    //const toysCollection = client.db("disneyToys").collection("toys");
+
     const disneyCollection = client.db("disneyToys").collection("dolls");
 
     app.get("/dolls", async (req, res) => {
@@ -56,8 +56,7 @@ async function run() {
 
     //?disney dolls
 
-    app.get("/dolls", async (req, res) => {
-      console.log(req.query);
+    app.get("/allDolls", async (req, res) => {
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email };
@@ -65,6 +64,7 @@ async function run() {
       const result = await disneyCollection.find(query).toArray();
       res.send(result);
     });
+
     app.post("/dolls", async (req, res) => {
       const doll = req.body;
       console.log(doll);
@@ -72,17 +72,17 @@ async function run() {
       res.send(result);
     });
     //? update data
-    app.patch("/dolls/:id", async (req, res) => {
+
+    app.patch("/update-toy/:id", async (req, res) => {
       const id = req.params.id;
+      const updateToyData = req.body;
       const filter = { _id: new ObjectId(id) };
-      const updatedDoll = req.body;
-      console.log(updatedDoll);
-      const updateDoc = {
+      const updateToy = {
         $set: {
-          status: updatedDoll.status,
+          ...updateToyData,
         },
       };
-      const result = await disneyCollection.updateOne(filter, updateDoc);
+      const result = await disneyCollection.updateOne(filter, updateToy);
       res.send(result);
     });
     //? delete data
