@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const {MongoClient, ServerApiVersion, ObjectId} = require("mongodb");
 require("dotenv").config();
 const app = express();
 
@@ -35,20 +35,22 @@ async function run() {
     //await client.connect();
 
     const disneyCollection = client.db("disneyToys").collection("dolls");
+   
 
     app.get("/dolls", async (req, res) => {
       const cursor = disneyCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+  
 
     app.get("/dolls/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = {_id: new ObjectId(id)};
 
       const options = {
         // Include only the `title` and `imdb` fields in each returned document
-        projection: { title: 1, price: 1, name: 1, rating: 1, img: 1 },
+        projection: {title: 1, price: 1, name: 1, rating: 1, img: 1},
       };
       const result = await disneyCollection.findOne(query, options);
       res.send(result);
@@ -59,7 +61,7 @@ async function run() {
     app.get("/allDolls", async (req, res) => {
       let query = {};
       if (req.query?.email) {
-        query = { email: req.query.email };
+        query = {email: req.query.email};
       }
       const result = await disneyCollection.find(query).toArray();
       res.send(result);
@@ -76,7 +78,7 @@ async function run() {
     app.patch("/update-toy/:id", async (req, res) => {
       const id = req.params.id;
       const updateToyData = req.body;
-      const filter = { _id: new ObjectId(id) };
+      const filter = {_id: new ObjectId(id)};
       const updateToy = {
         $set: {
           ...updateToyData,
@@ -88,7 +90,7 @@ async function run() {
     //? delete data
     app.delete("/dolls/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = {_id: new ObjectId(id)};
       const result = await disneyCollection.deleteOne(query);
       res.send(result);
     });
